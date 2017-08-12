@@ -3,6 +3,7 @@ using BMAPI.v1.HitObjects;
 using osu.Map.Converter.StepmaniaObjects;
 using osu.Map.Converter.Utils;
 using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace osu.Map.Converter
@@ -18,7 +19,7 @@ namespace osu.Map.Converter
                 MapCreator = beatmap.Creator,
                 Offset = -beatmap.TimingPoints[0].Time / 1000f,
                 SampleStart = (beatmap.PreviewTime ?? 0) / 1000f,
-                SampleLength = (beatmap.PreviewTime ?? 0 - beatmap.HitObjects[beatmap.HitObjects.Count - 1].StartTime) / 1000f,
+                SampleLength = (beatmap.HitObjects[beatmap.HitObjects.Count - 1].StartTime - beatmap.PreviewTime ?? 0) / 1000f,
                 Title = beatmap.Title,
                 TitleTranslit = beatmap.TitleUnicode,
                 Music = beatmap.AudioFilename,
@@ -26,7 +27,19 @@ namespace osu.Map.Converter
                 Selectable = true
             };
 
-            simfile.BPMS.Add(new DoublePair(0, 60000 / beatmap.TimingPoints[0].BpmDelay));
+            double lastNonInheritedBPM = 0;
+            for(int i = 0; i < beatmap.TimingPoints.Count; i++)
+            {
+                if (!beatmap.TimingPoints[i].InheritsBPM)
+                {
+                    simfile.BPMS.Add(new DoublePair((beatmap.TimingPoints[i].Time - beatmap.TimingPoints[0].Time) / 1000d, 60000 / beatmap.TimingPoints[i].BpmDelay));
+                    lastNonInheritedBPM = beatmap.TimingPoints[i].BpmDelay;
+                }
+                else
+                {
+                    simfile.BPMS.Add(new DoublePair((beatmap.TimingPoints[i].Time - beatmap.TimingPoints[0].Time) / 1000d, 60000 / (lastNonInheritedBPM * (-100 / beatmap.TimingPoints[i].BpmDelay))));
+                }
+            }
 
             CreateMeasures(beatmap, simfile);
 
@@ -45,17 +58,75 @@ namespace osu.Map.Converter
             File.WriteAllText(Path.Combine(outputDir, songFileName + ".sm"), GetOutputSm(simfile));
         }
 
+        /// <summary>
+        /// Get measure and note at <paramref name="time"/>
+        /// </summary>
+        /// <param name="time">Time in seconds from which to get measure and note</param>
+        /// <param name="bpms">List of BPMs of the simfile</param>
+        /// <param name="measure">The measure at <paramref name="time"/></param>
+        /// <param name="note">The note at <paramref name="time"/></param>
+        private static void GetMeasureAndDivisionAt(double time, List<DoublePair> bpms, out int measure, out int note)
+        {
+            if (bpms.Count == 1)
+            {
+                double measureLength = (60f / bpms[0].v2) * 4d;
+                measure = (int)(time / measureLength);
+                double measureStart = measure * measureLength;
+                note = (int)Math.Round(192 * ((time - measureStart) / measureLength));
+            }
+            else
+            {
+                measure = 0;
+                note = 0;
+                double measuresCounted = 0;
+                double previousMeasureLength = 0;
+                double previousBPMMeasureStart = 0;
+                for (int i = 0; i < bpms.Count; i++)
+                {
+                    double currentMeasureLength = (60f / bpms[i].v2) * 4d;
+                    if (i == 0)
+                    {
+                        previousMeasureLength = currentMeasureLength;
+                    }
+
+                    if (i + 1 < bpms.Count)
+                    {
+                        if (bpms[i + 1].v1 < time)
+                        {
+                            double measuresElapsed = (bpms[i].v1 - previousBPMMeasureStart) / previousMeasureLength;
+                            measuresCounted = measuresCounted + measuresElapsed;
+                            previousMeasureLength = currentMeasureLength;
+                            previousBPMMeasureStart = bpms[i].v1;
+                        }
+                        else
+                        {
+                            double measuresElapsed = (time - previousBPMMeasureStart) / previousMeasureLength;
+                            measure = (int)measuresElapsed;
+                            note = (int)Math.Round(192 * ((time - bpms[i].v1) / currentMeasureLength)) - measure * 192;
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        double measuresElapsed = (time - previousBPMMeasureStart) / previousMeasureLength;
+                        measure = (int)measuresElapsed;
+                        note = (int)Math.Round(192 * ((time - bpms[i].v1) / currentMeasureLength)) - measure * 192;
+                        break;
+                    }
+                }
+            }
+        }
+
         private static void CreateMeasures(Beatmap beatmap, Simfile simfile)
         {
             for(int i = 0; i < beatmap.HitObjects.Count; i++)
             {
                 var hitObject = beatmap.HitObjects[i];
                 double hitObjectTime = (hitObject.StartTime - beatmap.HitObjects[0].StartTime) / 1000f;
-                double measureLength = (60f / simfile.BPMS[0].v2) * 4d;
 
-                int measureNumber = (int)(hitObjectTime / measureLength);
-                double measureStart = measureNumber * measureLength;
-                int noteNumberInMeasure = (int)Math.Round(192 * ((hitObjectTime - measureStart) / measureLength));
+                int measureNumber;
+                int noteNumberInMeasure;
+                GetMeasureAndDivisionAt(hitObjectTime, simfile.BPMS, out measureNumber, out noteNumberInMeasure);
 
                 if (noteNumberInMeasure == 192)
                 {
@@ -71,9 +142,7 @@ namespace osu.Map.Converter
                 {
                     var slider = (SliderObject)hitObject;
                     hitObjectEnd = (slider.EndTime(beatmap) - beatmap.HitObjects[0].StartTime) / 1000f;
-                    endMeasureNumber = (int)(hitObjectEnd / measureLength);
-                    double endMeasureStart = endMeasureNumber * measureLength;
-                    endNoteNumberInMeasure = (int)Math.Round(192 * ((hitObjectEnd - endMeasureStart) / measureLength));
+                    GetMeasureAndDivisionAt(hitObjectEnd, simfile.BPMS, out endMeasureNumber, out endNoteNumberInMeasure);
 
                     if (endNoteNumberInMeasure == 192)
                     {

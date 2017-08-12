@@ -67,7 +67,7 @@
     <Compile Include="StepmaniaObjects\Measure.cs" />
     <Compile Include="StepmaniaObjects\Note.cs" />
     <Compile Include="StepmaniaObjects\Simfile.cs" />
-    <Compile Include="Utils\FloatPair.cs" />
+    <Compile Include="Utils\DoublePair.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

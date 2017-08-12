@@ -8,7 +8,7 @@ namespace osu.Map.Converter
     {
         static ConsoleColor defaultColor;
 
-        static void Main(string[] args)
+        static void Main2(string[] args)
         {
             string pathToStepmania = "";
 
@@ -62,17 +62,17 @@ namespace osu.Map.Converter
             }
         }
 
-        static void Main2(string[] args)
+        static void Main(string[] args)
         {
             defaultColor = Console.ForegroundColor;
-            /*Console.Write(  "       .:///////:.       "+ Environment.NewLine +
+            Console.Write(  "       .:///////:.       "+ Environment.NewLine +
                             "     ./////////////.     "+ Environment.NewLine +
                             "   ://' '/' '/'/'/ //:   "+ Environment.NewLine +
                             "  ./// / /. // / / ///.  "+ Environment.NewLine +
                             "  '/// / // '/ / /////'  "+ Environment.NewLine +
                             "   ://. ./. ./. ./ //:   "+ Environment.NewLine +
                             "     '/////////////'     "+ Environment.NewLine +
-                            "       ':///////:'       "+ Environment.NewLine);*/
+                            "       ':///////:'       "+ Environment.NewLine);
 
             string pathToIntralism = "";
 
