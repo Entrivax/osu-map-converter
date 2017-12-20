@@ -8,7 +8,7 @@ namespace osu.Map.Converter
     {
         static ConsoleColor defaultColor;
 
-        static void Main2(string[] args)
+        static void Main(string[] args)
         {
             string pathToStepmania = "";
 
@@ -58,11 +58,11 @@ namespace osu.Map.Converter
                 if (reset)
                     continue;
 
-                StepmaniaConverter.ConvertToStepmania(beatmap, pathToOsuFile, pathToStepmania);
+                StepmaniaConverter.ConvertToStepmania(beatmap, "./patterns.json", pathToOsuFile, pathToStepmania);
             }
         }
 
-        static void Main(string[] args)
+        static void Main2(string[] args)
         {
             defaultColor = Console.ForegroundColor;
             Console.Write(  "       .:///////:.       "+ Environment.NewLine +

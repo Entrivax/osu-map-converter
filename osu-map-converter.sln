@@ -1,11 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26228.12
+VisualStudioVersion = 15.0.27130.2010
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "osu-map-converter", "osu-map-converter\osu-map-converter.csproj", "{B41DAE0E-D8EF-4BA1-9EE3-ECCC85CC0C4D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "osu!BMAPI", "osu-BMAPI-master\osu!BMAPI.csproj", "{7D292085-3F6F-4299-B941-4D2C185DA37E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "osu-map-converter.Tests", "osu-map-converter.Tests\osu-map-converter.Tests.csproj", "{16B5E7C1-6886-41DB-B349-1D8CD2F5E9DC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,8 +23,15 @@ Global
 		{7D292085-3F6F-4299-B941-4D2C185DA37E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7D292085-3F6F-4299-B941-4D2C185DA37E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7D292085-3F6F-4299-B941-4D2C185DA37E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{16B5E7C1-6886-41DB-B349-1D8CD2F5E9DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{16B5E7C1-6886-41DB-B349-1D8CD2F5E9DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{16B5E7C1-6886-41DB-B349-1D8CD2F5E9DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{16B5E7C1-6886-41DB-B349-1D8CD2F5E9DC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B2BBACB1-3BCE-4604-9B05-42D5D3954730}
 	EndGlobalSection
 EndGlobal

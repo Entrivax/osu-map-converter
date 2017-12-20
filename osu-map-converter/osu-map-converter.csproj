@@ -68,6 +68,8 @@
     <Compile Include="StepmaniaObjects\Note.cs" />
     <Compile Include="StepmaniaObjects\Simfile.cs" />
     <Compile Include="Utils\DoublePair.cs" />
+    <Compile Include="Utils\ObjectMap.cs" />
+    <Compile Include="Utils\Pattern.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
